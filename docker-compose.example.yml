@@ -1,0 +1,38 @@
+###############################################################################
+#                          Generated on phpdocker.io                          #
+###############################################################################
+version: "3.1"
+services:
+
+    mysql:
+      image: mysql:5.7
+      container_name: laravelforum-mysql
+      working_dir: /application
+      volumes:
+        - ./mysql:/var/lib/mysql
+      environment:
+        - MYSQL_ROOT_PASSWORD=
+        - MYSQL_DATABASE=forum
+        - MYSQL_USER=forum
+        - MYSQL_PASSWORD=
+      ports:
+        - "8003:3306"
+
+    webserver:
+      image: nginx:alpine
+      container_name: laravelforum-webserver
+      working_dir: /var/www/forum
+      volumes:
+          - ./forum:/var/www/forum
+          - ./phpdocker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      ports:
+       - "8001:80"
+
+    php-fpm:
+      build: phpdocker/php-fpm
+      container_name: laravelforum-php-fpm
+      working_dir: /var/www/forum
+      volumes:
+        - ./forum:/var/www/forum
+        - ./phpdocker/php-fpm/php-ini-overrides.ini:/etc/php/7.0/fpm/conf.d/99-overrides.ini
+
